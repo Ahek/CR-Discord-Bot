@@ -14,7 +14,7 @@ my_headers = {'Authorization' : f'Bearer {CRTOKEN}'}
 
 data = requests.request("GET", f"https://api.clashroyale.com/v1/clans/%23{clantag}", headers = my_headers).json()['memberList']
 
-df = pd.DataFrame(data)
+df = pd.DataFrame(data) #Dataframe with data from the request
 df['arena'] = [x['name'] for x in df['arena']]
 
 wardata = requests.request("GET", f"https://api.clashroyale.com/v1/clans/%23{novauk3}/riverracelog", headers = my_headers).json()['items']
@@ -29,9 +29,9 @@ for week in standings:
             warstats.append(rank['clan']['participants'])
             break
             
-name = [[player['name'] for player in week] for week in warstats]
-fame = [[player['fame'] for player in week] for week in warstats]
-tag = [[player['tag'] for player in week] for week in warstats]     
+name = [[player['name'] for player in week] for week in warstats] #List of names in the clan
+fame = [[player['fame'] for player in week] for week in warstats] #List of gotten fame in war for each player
+tag = [[player['tag'] for player in week] for week in warstats] #List of playertags
 
 df_name = pd.DataFrame(data = name, index = [f'Week {x+1}' for x in range(len(name))]).transpose()
 df_fame = pd.DataFrame(data = fame, index = [f'Week {x+1}' for x in range(len(name))]).transpose()
@@ -50,9 +50,10 @@ for week in list(df_tag.columns):
         list_tags.add(x)
 
 df_eind = pd.DataFrame(data = [[np.nan] * len(fame)]*len(list_tags))
+#The empty dataframe that will get the data in it
 
 df_eind.columns = [f'Week {x+1}' for x in range(len(tag))]
-df_eind.index = list_tags
+df_eind.index = list_tags #Gives rownames
 
 def get_name(tag_hash):
     if tag_hash is None:
@@ -87,6 +88,7 @@ for week in range(len(name)):
         for warplayer in range(len(name[week])):
             if df_eind.index[clanplayer] == tag[week][warplayer]:
                 df_eind.iloc[clanplayer, week] = fame[week][warplayer]
+#Adds all values in a forloop (might take some time)
                 
 df_eind['Name'] = [get_name(tag) for tag in df_eind.index]
 df_eind['trophies'] = [get_trophies(tag) for tag in df_eind.index]
@@ -97,6 +99,7 @@ clandata = requests.request("GET", f"https://api.clashroyale.com/v1/clans/%23{cl
 membertags = [x['tag'] for x in clandata]
 
 df_members = df_eind.loc[df_eind.index.isin(membertags)]
+#Delete this line if you also want players in the file that aren't in the clan
 
 date = date.today().strftime("%d %B")
 df_members.to_excel(f"War {date}.xlsx", sheet_name = clanname)
