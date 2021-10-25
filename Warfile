@@ -56,6 +56,7 @@ df_eind.columns = [f'Week {x+1}' for x in range(len(tag))]
 df_eind.index = list_tags #Gives rownames
 
 def get_name(tag_hash):
+#Takes a playertag with hash and returns the name. Has sleeptime to not be blocked
     if tag_hash is None:
         name = np.nan
     try:
@@ -70,6 +71,7 @@ def get_name(tag_hash):
     return name
 
 def get_trophies(tag_hash):
+#Takes a playertag with hash and returns the trophies. Has sleeptime to not be blocked
     if tag_hash is None:
         return np.nan
     try:
